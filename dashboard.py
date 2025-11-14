@@ -38,6 +38,7 @@ class ComprehensiveDashboard:
         self.analytics_db = Path("data/analytics.db")
         self.smart_wallets_file = Path("data/smart_money_wallets.json")
         self.cabal_groups_file = Path("data/cabal_groups.json")
+        self.indicator_weights_file = Path("data/indicator_weights.json")
 
         # Monitor manager
         self.monitor_manager = MonitorManager()
@@ -168,9 +169,6 @@ class ComprehensiveDashboard:
                     dcc.Tab(label='📊 Overview', value='overview',
                            style={'backgroundColor': colors['card'], 'color': colors['text']},
                            selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
-                    dcc.Tab(label='🎛️ Monitors', value='monitors',
-                           style={'backgroundColor': colors['card'], 'color': colors['text']},
-                           selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
                     dcc.Tab(label='🔥 Smart Wallets', value='smart_wallets',
                            style={'backgroundColor': colors['card'], 'color': colors['text']},
                            selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
@@ -192,6 +190,9 @@ class ComprehensiveDashboard:
                     dcc.Tab(label='⚙️ Strategy', value='strategy',
                            style={'backgroundColor': colors['card'], 'color': colors['text']},
                            selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
+                    dcc.Tab(label='🎮 Command Center', value='command_center',
+                           style={'backgroundColor': colors['card'], 'color': colors['text']},
+                           selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
                 ], style={'backgroundColor': colors['background']}),
 
                 html.Div(id='tab-content', style={'padding': '20px', 'backgroundColor': colors['background']})
@@ -211,8 +212,6 @@ class ComprehensiveDashboard:
 
             if tab == 'overview':
                 return self._render_overview()
-            elif tab == 'monitors':
-                return self._render_monitors()
             elif tab == 'smart_wallets':
                 return self._render_smart_wallets()
             elif tab == 'token_monitor':
@@ -227,6 +226,8 @@ class ComprehensiveDashboard:
                 return self._render_predictions()
             elif tab == 'strategy':
                 return self._render_strategy()
+            elif tab == 'command_center':
+                return self._render_command_center()
 
             return html.Div("Loading...")
 
@@ -697,8 +698,21 @@ class ComprehensiveDashboard:
             ], style={'marginTop': '20px'})
         ])
 
-    def _render_monitors(self):
-        """Render monitor status and controls tab"""
+    def _load_indicator_weights(self) -> dict:
+        """Load indicator weights configuration"""
+        if not self.indicator_weights_file.exists():
+            return {'indicators': {}}
+
+        try:
+            with open(self.indicator_weights_file, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Error loading indicator weights: {e}")
+            return {'indicators': {}}
+
+    def _render_command_center(self):
+        """Render comprehensive command center with monitors and indicator configuration"""
+        # Monitor status section
         statuses = self.monitor_manager.get_all_statuses()
 
         monitor_cards = []
@@ -711,13 +725,11 @@ class ComprehensiveDashboard:
 
             monitor_cards.append(
                 html.Div([
-                    # Monitor info
                     html.Div([
                         html.H4(status['name'], style={'color': '#00d4ff', 'margin': '0'}),
                         html.P(status['description'], style={'color': '#999', 'margin': '5px 0'}),
                     ], style={'flex': '1'}),
 
-                    # Status and controls
                     html.Div([
                         html.P(status_text, style={'color': status_color, 'fontWeight': 'bold', 'margin': '0 0 10px 0'}),
                         html.Button(
@@ -749,12 +761,88 @@ class ComprehensiveDashboard:
                 })
             )
 
-        return html.Div([
-            html.H3("🎛️ Monitor Control Panel", style={'color': '#00d4ff'}),
-            html.P("Start and stop monitoring processes from the dashboard",
-                   style={'color': '#999', 'marginBottom': '30px'}),
+        # Indicator weights section
+        weights_config = self._load_indicator_weights()
+        indicators = weights_config.get('indicators', {})
 
-            html.Div(monitor_cards)
+        # Count indicators
+        total_indicators = 0
+        enabled_indicators = 0
+        for category_name, category_data in indicators.items():
+            if isinstance(category_data, dict) and 'indicators' in category_data:
+                cat_indicators = category_data['indicators']
+                total_indicators += len(cat_indicators)
+                enabled_indicators += sum(1 for ind in cat_indicators.values() if ind.get('enabled', True))
+
+        # Build indicator display by category
+        indicator_sections = []
+        for category_name, category_data in indicators.items():
+            if not isinstance(category_data, dict) or 'indicators' not in category_data:
+                continue
+
+            category_label = category_data.get('category', category_name)
+            category_enabled = category_data.get('enabled', True)
+            cat_indicators = category_data['indicators']
+
+            # Create indicator rows for this category
+            indicator_rows = []
+            for ind_name, ind_config in cat_indicators.items():
+                weight = ind_config.get('weight', 0.5)
+                description = ind_config.get('description', ind_name)
+                ind_enabled = ind_config.get('enabled', True)
+
+                # Color code by weight
+                weight_color = '#00ff9f' if weight >= 0.8 else '#ffd700' if weight >= 0.5 else '#ff9999'
+
+                indicator_rows.append(
+                    html.Tr([
+                        html.Td(ind_name, style={'padding': '10px', 'fontSize': '13px', 'fontFamily': 'monospace'}),
+                        html.Td(description, style={'padding': '10px', 'fontSize': '12px', 'color': '#ccc'}),
+                        html.Td(f"{weight:.2f}", style={'padding': '10px', 'fontWeight': 'bold', 'color': weight_color, 'textAlign': 'center'}),
+                        html.Td('✅' if ind_enabled else '❌', style={'padding': '10px', 'textAlign': 'center'})
+                    ], style={'backgroundColor': '#1e2130' if ind_enabled else '#2a2a2a', 'border': '1px solid #333'})
+                )
+
+            indicator_sections.append(
+                html.Div([
+                    html.H4(f"{category_label} Indicators {'✅' if category_enabled else '❌'}",
+                           style={'color': '#00d4ff', 'marginTop': '30px', 'marginBottom': '15px'}),
+                    html.P(f"{len(cat_indicators)} indicators in this category",
+                          style={'color': '#999', 'fontSize': '12px', 'marginBottom': '10px'}),
+                    html.Table([
+                        html.Thead(html.Tr([
+                            html.Th('Indicator Name', style={'backgroundColor': '#2a2d3a', 'color': '#fff', 'padding': '12px', 'border': '1px solid #333', 'fontSize': '12px'}),
+                            html.Th('Description', style={'backgroundColor': '#2a2d3a', 'color': '#fff', 'padding': '12px', 'border': '1px solid #333', 'fontSize': '12px'}),
+                            html.Th('Weight', style={'backgroundColor': '#2a2d3a', 'color': '#fff', 'padding': '12px', 'border': '1px solid #333', 'textAlign': 'center', 'fontSize': '12px'}),
+                            html.Th('Status', style={'backgroundColor': '#2a2d3a', 'color': '#fff', 'padding': '12px', 'border': '1px solid #333', 'textAlign': 'center', 'fontSize': '12px'})
+                        ])),
+                        html.Tbody(indicator_rows)
+                    ], style={'width': '100%', 'borderCollapse': 'collapse', 'marginBottom': '20px'})
+                ])
+            )
+
+        return html.Div([
+            html.H3("🎮 Command Center", style={'color': '#00d4ff'}),
+
+            # Monitor Control Section
+            html.H4("🎛️ Monitor Control", style={'color': '#00ff9f', 'marginTop': '20px'}),
+            html.P("Start and stop monitoring processes from the dashboard",
+                   style={'color': '#999', 'marginBottom': '20px'}),
+            html.Div(monitor_cards),
+
+            # Indicator Configuration Section
+            html.H4("📊 Indicator Configuration", style={'color': '#00ff9f', 'marginTop': '40px'}),
+            html.P(f"Total Indicators: {total_indicators} | Enabled: {enabled_indicators} | Disabled: {total_indicators - enabled_indicators}",
+                   style={'color': '#999', 'marginBottom': '20px'}),
+            html.Div([
+                html.P("💡 Indicator weights control how much each signal influences trading decisions. Higher weights (closer to 1.0) = stronger influence.",
+                      style={'color': '#ccc', 'fontSize': '13px', 'marginBottom': '10px'}),
+                html.P("📝 To modify indicator weights, edit data/indicator_weights.json and reload the dashboard.",
+                      style={'color': '#ffd700', 'fontSize': '13px', 'marginBottom': '20px'})
+            ], style={'backgroundColor': '#1e2130', 'padding': '15px', 'borderRadius': '8px', 'marginBottom': '30px'}),
+
+            # Indicator tables by category
+            html.Div(indicator_sections)
         ])
 
     def _load_smart_wallets(self) -> dict:
