@@ -1,0 +1,55 @@
+# Environment and secrets
+.env
+*.env
+config/settings.py
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data files (may contain sensitive trading data)
+data/
+*.db
+*.sqlite
+*.json
+!requirements.json
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups
+*_old.py
+*_backup.py
+dashboard_v2.py
+nul

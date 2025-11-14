@@ -1,0 +1,62 @@
+# Core dependencies
+python-dotenv==1.0.1
+requests==2.32.3
+aiohttp==3.11.11
+
+# Solana & blockchain
+solana==0.35.0
+solders==0.21.0
+
+# Telegram client for Phanes bot
+telethon==1.38.1
+cryptg==0.5.0
+
+# Data processing
+pandas==2.2.3
+numpy==2.2.1
+scikit-learn==1.6.1
+
+# Machine learning
+lightgbm==4.5.0
+xgboost==2.1.3
+# catboost==1.2.7  # Not compatible with Python 3.13 yet
+
+# Feature engineering
+ta==0.11.0
+statsmodels==0.14.4
+
+# Database & storage
+sqlalchemy==2.0.36
+sqlite-utils==3.38
+
+# Visualization & dashboard
+plotly==5.24.1
+dash==2.18.2
+dash-bootstrap-components==1.6.0
+
+# Monitoring & logging
+loguru==0.7.3
+prometheus-client==0.21.0
+
+# API & web
+fastapi==0.115.6
+uvicorn==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.0
+
+# Social data (optional - Twitter)
+tweepy==4.14.0
+textblob==0.18.0
+
+# Utilities
+pytz==2024.2
+python-dateutil==2.9.0
+tqdm==4.67.1
+schedule==1.2.2
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+
+# Claude AI integration
+anthropic==0.42.0
