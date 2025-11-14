@@ -9,7 +9,7 @@ Modern, user-friendly interface combining all features:
 """
 import dash
 from dash import dcc, html, dash_table
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import plotly.express as px
 import pandas as pd
@@ -18,6 +18,7 @@ from pathlib import Path
 import json
 from datetime import datetime, timedelta
 from loguru import logger
+from monitor_manager import MonitorManager
 
 
 class ComprehensiveDashboard:
@@ -35,6 +36,9 @@ class ComprehensiveDashboard:
         self.params_file = Path("data/strategy_parameters.json")
         self.opt_log_file = Path("data/optimization_log.json")
         self.analytics_db = Path("data/analytics.db")
+
+        # Monitor manager
+        self.monitor_manager = MonitorManager()
 
         self._setup_layout()
         self._setup_callbacks()
@@ -162,6 +166,9 @@ class ComprehensiveDashboard:
                     dcc.Tab(label='📊 Overview', value='overview',
                            style={'backgroundColor': colors['card'], 'color': colors['text']},
                            selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
+                    dcc.Tab(label='🎛️ Monitors', value='monitors',
+                           style={'backgroundColor': colors['card'], 'color': colors['text']},
+                           selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
                     dcc.Tab(label='💼 Trading Journal', value='journal',
                            style={'backgroundColor': colors['card'], 'color': colors['text']},
                            selected_style={'backgroundColor': colors['accent'], 'color': colors['background']}),
@@ -196,6 +203,8 @@ class ComprehensiveDashboard:
 
             if tab == 'overview':
                 return self._render_overview()
+            elif tab == 'monitors':
+                return self._render_monitors()
             elif tab == 'journal':
                 return self._render_journal()
             elif tab == 'ai':
@@ -208,6 +217,35 @@ class ComprehensiveDashboard:
                 return self._render_strategy()
 
             return html.Div("Loading...")
+
+        # Monitor control callbacks
+        for monitor_id in self.monitor_manager.MONITORS.keys():
+            self._create_monitor_callback(monitor_id)
+
+    def _create_monitor_callback(self, monitor_id: str):
+        """Create callback for a specific monitor's control button"""
+        @self.app.callback(
+            Output(f'monitor-msg-{monitor_id}', 'children'),
+            [Input(f'monitor-btn-{monitor_id}', 'n_clicks')]
+        )
+        def control_monitor(n_clicks):
+            if n_clicks == 0:
+                return ""
+
+            # Check current status
+            status = self.monitor_manager.get_monitor_status(monitor_id)
+
+            if status['running']:
+                # Stop the monitor
+                result = self.monitor_manager.stop_monitor(monitor_id)
+            else:
+                # Start the monitor
+                result = self.monitor_manager.start_monitor(monitor_id)
+
+            if result['success']:
+                return f"✅ {result['message']}"
+            else:
+                return f"❌ {result['error']}"
 
     def _render_overview(self):
         """Render overview tab"""
@@ -645,6 +683,66 @@ class ComprehensiveDashboard:
                 html.P(f"Last Updated: {params.get('last_updated', 'N/A')}", style={'color': '#999'}),
                 html.P(f"Version: {params.get('version', 1)}", style={'color': '#999'}),
             ], style={'marginTop': '20px'})
+        ])
+
+    def _render_monitors(self):
+        """Render monitor status and controls tab"""
+        statuses = self.monitor_manager.get_all_statuses()
+
+        monitor_cards = []
+        for monitor_id, status in statuses.items():
+            is_running = status['running']
+            status_color = '#00ff9f' if is_running else '#999'
+            status_text = '🟢 Running' if is_running else '⚫ Stopped'
+            button_color = '#ff4444' if is_running else '#00ff9f'
+            button_text = '⏸ Stop' if is_running else '▶️ Start'
+
+            monitor_cards.append(
+                html.Div([
+                    # Monitor info
+                    html.Div([
+                        html.H4(status['name'], style={'color': '#00d4ff', 'margin': '0'}),
+                        html.P(status['description'], style={'color': '#999', 'margin': '5px 0'}),
+                    ], style={'flex': '1'}),
+
+                    # Status and controls
+                    html.Div([
+                        html.P(status_text, style={'color': status_color, 'fontWeight': 'bold', 'margin': '0 0 10px 0'}),
+                        html.Button(
+                            button_text,
+                            id=f'monitor-btn-{monitor_id}',
+                            n_clicks=0,
+                            style={
+                                'backgroundColor': button_color,
+                                'color': '#000',
+                                'border': 'none',
+                                'padding': '10px 20px',
+                                'borderRadius': '5px',
+                                'cursor': 'pointer',
+                                'fontWeight': 'bold',
+                                'fontSize': '14px'
+                            }
+                        ),
+                        html.Div(id=f'monitor-msg-{monitor_id}', style={'marginTop': '10px', 'color': '#ffd700', 'fontSize': '12px'})
+                    ], style={'textAlign': 'right'})
+                ], style={
+                    'backgroundColor': '#1e2130',
+                    'padding': '20px',
+                    'borderRadius': '10px',
+                    'marginBottom': '15px',
+                    'display': 'flex',
+                    'justifyContent': 'space-between',
+                    'alignItems': 'center',
+                    'border': f'2px solid {status_color}'
+                })
+            )
+
+        return html.Div([
+            html.H3("🎛️ Monitor Control Panel", style={'color': '#00d4ff'}),
+            html.P("Start and stop monitoring processes from the dashboard",
+                   style={'color': '#999', 'marginBottom': '30px'}),
+
+            html.Div(monitor_cards)
         ])
 
     def run(self):
