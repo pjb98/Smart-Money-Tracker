@@ -1,0 +1,328 @@
+{
+  "last_updated": "2025-11-14T08:00:00",
+  "version": 1,
+  "indicators": {
+    "temporal_features": {
+      "category": "Temporal",
+      "enabled": true,
+      "indicators": {
+        "hour_of_day": {
+          "weight": 0.3,
+          "description": "Time of day (0-23 hours)",
+          "enabled": true
+        },
+        "day_of_week": {
+          "weight": 0.2,
+          "description": "Day of week (0=Monday, 6=Sunday)",
+          "enabled": true
+        },
+        "is_weekend": {
+          "weight": 0.4,
+          "description": "Is it weekend (1) or weekday (0)",
+          "enabled": true
+        },
+        "token_age_hours": {
+          "weight": 0.8,
+          "description": "Token age in hours since creation",
+          "enabled": true
+        },
+        "token_age_days": {
+          "weight": 0.7,
+          "description": "Token age in days since creation",
+          "enabled": true
+        },
+        "time_since_first_liq_hours": {
+          "weight": 0.6,
+          "description": "Hours since first liquidity added",
+          "enabled": true
+        }
+      }
+    },
+    "liquidity_features": {
+      "category": "Liquidity",
+      "enabled": true,
+      "indicators": {
+        "initial_liquidity_sol": {
+          "weight": 1.0,
+          "description": "Initial liquidity in SOL",
+          "enabled": true
+        },
+        "initial_liquidity_usd": {
+          "weight": 0.9,
+          "description": "Initial liquidity in USD",
+          "enabled": true
+        },
+        "token_reserve": {
+          "weight": 0.7,
+          "description": "Token reserve in pool",
+          "enabled": true
+        },
+        "sol_reserve": {
+          "weight": 0.8,
+          "description": "SOL reserve in pool",
+          "enabled": true
+        },
+        "reserve_ratio": {
+          "weight": 0.6,
+          "description": "Ratio of SOL to token reserves",
+          "enabled": true
+        },
+        "lp_provider_count": {
+          "weight": 0.5,
+          "description": "Number of liquidity providers",
+          "enabled": true
+        },
+        "pool_locked": {
+          "weight": 0.9,
+          "description": "Is liquidity locked (1) or not (0)",
+          "enabled": true
+        },
+        "initial_price_sol": {
+          "weight": 0.7,
+          "description": "Initial token price in SOL",
+          "enabled": true
+        }
+      }
+    },
+    "transaction_features": {
+      "category": "Transactions",
+      "enabled": true,
+      "indicators": {
+        "tx_count_1m": {
+          "weight": 0.8,
+          "description": "Transaction count in last 1 minute",
+          "enabled": true
+        },
+        "tx_count_5m": {
+          "weight": 0.9,
+          "description": "Transaction count in last 5 minutes",
+          "enabled": true
+        },
+        "tx_count_15m": {
+          "weight": 0.9,
+          "description": "Transaction count in last 15 minutes",
+          "enabled": true
+        },
+        "tx_count_1h": {
+          "weight": 1.0,
+          "description": "Transaction count in last 1 hour",
+          "enabled": true
+        },
+        "tx_count_6h": {
+          "weight": 0.7,
+          "description": "Transaction count in last 6 hours",
+          "enabled": true
+        },
+        "tx_count_24h": {
+          "weight": 0.6,
+          "description": "Transaction count in last 24 hours",
+          "enabled": true
+        },
+        "unique_wallets_1m": {
+          "weight": 0.8,
+          "description": "Unique wallets in last 1 minute",
+          "enabled": true
+        },
+        "unique_wallets_5m": {
+          "weight": 0.9,
+          "description": "Unique wallets in last 5 minutes",
+          "enabled": true
+        },
+        "unique_wallets_15m": {
+          "weight": 0.9,
+          "description": "Unique wallets in last 15 minutes",
+          "enabled": true
+        },
+        "unique_wallets_1h": {
+          "weight": 1.0,
+          "description": "Unique wallets in last 1 hour",
+          "enabled": true
+        },
+        "unique_wallets_6h": {
+          "weight": 0.7,
+          "description": "Unique wallets in last 6 hours",
+          "enabled": true
+        },
+        "unique_wallets_24h": {
+          "weight": 0.6,
+          "description": "Unique wallets in last 24 hours",
+          "enabled": true
+        }
+      }
+    },
+    "holder_features": {
+      "category": "Holders",
+      "enabled": true,
+      "indicators": {
+        "holder_count": {
+          "weight": 0.9,
+          "description": "Total number of token holders",
+          "enabled": true
+        },
+        "top1_holder_pct": {
+          "weight": 1.0,
+          "description": "% of supply held by top 1 holder",
+          "enabled": true
+        },
+        "top5_holder_pct": {
+          "weight": 0.9,
+          "description": "% of supply held by top 5 holders",
+          "enabled": true
+        },
+        "top10_holder_pct": {
+          "weight": 0.8,
+          "description": "% of supply held by top 10 holders",
+          "enabled": true
+        },
+        "gini_coefficient": {
+          "weight": 0.7,
+          "description": "Wealth distribution inequality (0=equal, 1=unequal)",
+          "enabled": true
+        }
+      }
+    },
+    "social_features": {
+      "category": "Social",
+      "enabled": true,
+      "indicators": {
+        "phanes_scan_count": {
+          "weight": 0.6,
+          "description": "Number of Phanes bot scans",
+          "enabled": true
+        },
+        "phanes_scan_velocity": {
+          "weight": 0.7,
+          "description": "Average scan velocity on Phanes",
+          "enabled": true
+        },
+        "phanes_popularity_rank": {
+          "weight": 0.8,
+          "description": "Rank on Phanes (lower is better)",
+          "enabled": true
+        },
+        "phanes_rug_warning": {
+          "weight": 1.0,
+          "description": "Phanes rug pull warning (1=warning, 0=safe)",
+          "enabled": true
+        },
+        "phanes_sentiment_score": {
+          "weight": 0.7,
+          "description": "Average sentiment score from Phanes",
+          "enabled": true
+        },
+        "twitter_mention_count_1h": {
+          "weight": 0.8,
+          "description": "Twitter mentions in last 1 hour",
+          "enabled": true
+        },
+        "twitter_mention_count_24h": {
+          "weight": 0.7,
+          "description": "Twitter mentions in last 24 hours",
+          "enabled": true
+        },
+        "twitter_sentiment_score": {
+          "weight": 0.8,
+          "description": "Overall Twitter sentiment score",
+          "enabled": true
+        },
+        "twitter_influencer_mentions": {
+          "weight": 0.9,
+          "description": "Number of influencer mentions",
+          "enabled": true
+        },
+        "twitter_account_age_days": {
+          "weight": 0.6,
+          "description": "Age of Twitter account in days",
+          "enabled": true
+        },
+        "twitter_account_is_new": {
+          "weight": 0.7,
+          "description": "Is Twitter account new (<30 days)",
+          "enabled": true
+        },
+        "twitter_account_is_very_new": {
+          "weight": 0.8,
+          "description": "Is Twitter account very new (<7 days)",
+          "enabled": true
+        },
+        "twitter_follower_count": {
+          "weight": 0.7,
+          "description": "Number of Twitter followers",
+          "enabled": true
+        },
+        "twitter_following_count": {
+          "weight": 0.4,
+          "description": "Number of accounts following",
+          "enabled": true
+        },
+        "twitter_engagement_score": {
+          "weight": 0.8,
+          "description": "Twitter engagement score",
+          "enabled": true
+        }
+      }
+    },
+    "developer_features": {
+      "category": "Developer",
+      "enabled": true,
+      "indicators": {
+        "dev_wallet_age_days": {
+          "weight": 0.8,
+          "description": "Age of developer wallet in days",
+          "enabled": true
+        },
+        "dev_successful_launches": {
+          "weight": 0.9,
+          "description": "Number of successful token launches by dev",
+          "enabled": true
+        },
+        "dev_failed_launches": {
+          "weight": 1.0,
+          "description": "Number of failed token launches by dev",
+          "enabled": true
+        },
+        "dev_avg_token_performance": {
+          "weight": 0.9,
+          "description": "Average performance of dev's previous tokens",
+          "enabled": true
+        },
+        "dev_credibility_score": {
+          "weight": 1.0,
+          "description": "Overall developer credibility score",
+          "enabled": true
+        }
+      }
+    },
+    "smart_money_features": {
+      "category": "Smart Money",
+      "enabled": true,
+      "indicators": {
+        "smart_money_holder_count": {
+          "weight": 1.0,
+          "description": "Number of smart money wallets holding",
+          "enabled": true
+        },
+        "smart_money_total_holdings_pct": {
+          "weight": 1.0,
+          "description": "% of supply held by smart money",
+          "enabled": true
+        },
+        "smart_money_avg_win_rate": {
+          "weight": 0.9,
+          "description": "Average win rate of smart money holders",
+          "enabled": true
+        },
+        "cabal_presence_score": {
+          "weight": 1.0,
+          "description": "Presence of coordinated cabal groups",
+          "enabled": true
+        },
+        "cabal_coordination_strength": {
+          "weight": 0.9,
+          "description": "Strength of cabal coordination",
+          "enabled": true
+        }
+      }
+    }
+  }
+}

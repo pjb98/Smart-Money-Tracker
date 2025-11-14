@@ -32,6 +32,7 @@ data/
 *.sqlite
 *.json
 !requirements.json
+!data/indicator_weights.json
 
 # Logs
 logs/
